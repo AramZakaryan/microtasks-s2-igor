@@ -47,34 +47,27 @@ function App() {
             {id: v1(), title: "GraphQL2", isDone: false},
         ]
     });
-
-
-    function removeTask(id: string) {
-        // let filteredTasks = tasks.filter(t => t.id != id);
-        // setTasks(filteredTasks);
+    function changeStatus(todolistId: string, taskId: string, isDone: boolean) {
+        setTasks({
+            ...tasks,
+            [todolistId]: tasks[todolistId].map(el => el.id === taskId ? {...el, isDone} : el)
+        });
     }
 
-    function addTask(title: string) {
-        // let task = {id: v1(), title: title, isDone: false};
-        // let newTasks = [task, ...tasks];
-        // setTasks(newTasks);
+    function removeTask(todolistId: string, id: string) {
+        setTasks({...tasks, [todolistId]: tasks[todolistId].filter(el => el.id !== id)});
     }
 
-    function changeStatus(taskId: string, isDone: boolean) {
-        // let task = tasks.find(t => t.id === taskId);
-        // if (task) {
-        //     task.isDone = isDone;
-        // }
-        //
-        // setTasks([...tasks]);
+    function addTask(todolistId: string, title: string) {
+        let newTask = {id: v1(), title: title, isDone: false};
+        setTasks({...tasks, [todolistId]: [newTask, ...tasks[todolistId]]});
     }
 
 
 
 
-
-    function changeFilter(value: FilterValuesType) {
-        // setFilter(value);
+    function changeFilter(todolistID: string, value: FilterValuesType) {
+        setTodolists(todolists.map(el => el.id === todolistID ? {...el, filter: value} : el));
     }
 
 
@@ -89,7 +82,9 @@ function App() {
                 if (mapTodolist.filter === "completed") {
                     tasksForTodolist = tasks[mapTodolist.id].filter(t => t.isDone === true);
                 }
-                return <Todolist title={mapTodolist.title}
+                return <Todolist key={mapTodolist.id}
+                                 todolistId={mapTodolist.id}
+                                 title={mapTodolist.title}
                                  tasks={tasksForTodolist}
                                  removeTask={removeTask}
                                  changeFilter={changeFilter}
